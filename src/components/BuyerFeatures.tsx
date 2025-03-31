@@ -41,8 +41,8 @@ const BuyerFeatures: React.FC = () => {
         </div>
         
         <div className="md:w-1/2 flex justify-center">
-          <div className="relative w-full max-w-md  md:h-[800px]">
-            <img 
+        <div className="relative w-full max-w-md md:h-[800px] overflow-visible">
+        <img 
               src="/lovable-uploads/0c058e56-b517-4bd1-aee6-1a4ebc992589.png"
               alt="ICanCook App Seller Dashboard"
               className="max-w-[80%] md:max-w-full h-auto relative z-10 mx-auto rounded-xl shadow-lg"
@@ -54,12 +54,16 @@ const BuyerFeatures: React.FC = () => {
             <div className="absolute bottom-[25%] left-[10%] md:left-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-green z-5"></div>
             
             {/* First card - Calendar Feature */}
-<Card className="absolute top-[5%] left-[-20px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
-  <CardContent className="p-4">
-    {/* ... card content ... */}
-  </CardContent>
-</Card>
-
+            <Card className="absolute top-[5%] left-[-20px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+            <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="highlight-dot bg-icancook-purple"></span>
+                  <h3 className="text-xl font-bold">Cooking Schedule</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-purple/20" />
+                <p className="text-sm">Plan your meals with our intuitive calendar system that helps manage your cooking schedule</p>
+              </CardContent>
+            </Card>
             
             {/* Second card - Earnings */}
             <Card className="absolute top-[35%] right-[-80px] md:right-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
