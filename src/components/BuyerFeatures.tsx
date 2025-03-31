@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const BuyerFeatures: React.FC = () => {
   return (
@@ -39,39 +41,53 @@ const BuyerFeatures: React.FC = () => {
         </div>
         
         <div className="md:w-1/2 flex justify-center">
-          <div className="relative w-full max-w-md h-[600px] md:h-[650px]">
+          <div className="relative w-full max-w-md h-[700px] md:h-[750px]">
             <img 
-              src="/lovable-uploads/f8f74adc-1858-47f9-b2ad-3aa9fa78b72d.png"
-              alt="ICanCook App Buyer Interface"
-              className="max-w-[80%] md:max-w-full h-auto relative z-10 mx-auto"
+              src="/lovable-uploads/0c058e56-b517-4bd1-aee6-1a4ebc992589.png"
+              alt="ICanCook App Seller Dashboard"
+              className="max-w-[80%] md:max-w-full h-auto relative z-10 mx-auto rounded-xl shadow-lg"
             />
             
-            {/* First card - Cheaper than restaurants */}
-            <div className="absolute top-0 left-0 md:right-0 md:left-auto bg-white rounded-xl p-4 md:p-6 shadow-lg max-w-xs z-20 mt-4 md:mt-0 md:-mr-4 lg:-mr-12">
-              <div className="flex items-center mb-2">
-                <span className="highlight-dot"></span>
-                <h3 className="text-xl font-bold">Cheaper than restaurants</h3>
-              </div>
-              <p className="text-sm md:text-base">Since sellers can charge their own prices, and food is homemade, you will find prices much cheaper and healthier</p>
-            </div>
+            {/* Connecting lines */}
+            <div className="absolute top-[10%] left-[10%] md:left-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-purple z-5"></div>
+            <div className="absolute top-[40%] right-[10%] md:right-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-red z-5"></div>
+            <div className="absolute bottom-[25%] left-[10%] md:left-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-green z-5"></div>
             
-            {/* Second card - Homemade Food */}
-            <div className="absolute top-[40%] right-0 md:right-0 bg-white rounded-xl p-4 md:p-6 shadow-lg max-w-xs z-20 md:-mr-4 lg:-mr-12">
-              <div className="flex items-center mb-2">
-                <span className="feature-icon green-dot"></span>
-                <h3 className="text-xl font-bold">Homemade Food</h3>
-              </div>
-              <p className="text-sm md:text-base">Homemade food is much healthier and tastier, why not also be cheaper and build new connections!</p>
-            </div>
+            {/* First card - Calendar Feature */}
+            <Card className="absolute top-[5%] left-[-80px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="highlight-dot bg-icancook-purple"></span>
+                  <h3 className="text-xl font-bold">Cooking Schedule</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-purple/20" />
+                <p className="text-sm">Plan your meals with our intuitive calendar system that helps manage your cooking schedule</p>
+              </CardContent>
+            </Card>
             
-            {/* Third card - Support Local Chefs */}
-            <div className="absolute bottom-4 left-0 md:right-0 md:left-auto bg-white rounded-xl p-4 md:p-6 shadow-lg max-w-xs z-20 md:-mr-4 lg:-mr-12">
-              <div className="flex items-center mb-2">
-                <span className="feature-icon red-dot"></span>
-                <h3 className="text-xl font-bold">Support Local Chefs</h3>
-              </div>
-              <p className="text-sm md:text-base">Build connections with local chefs who can cook for you and list unique dishes on ICanCook</p>
-            </div>
+            {/* Second card - Earnings */}
+            <Card className="absolute top-[35%] right-[-80px] md:right-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="feature-icon red-dot"></span>
+                  <h3 className="text-xl font-bold">Earnings Tracker</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-red/20" />
+                <p className="text-sm">Track your monthly earnings from purchases and place your orders for homemade meals</p>
+              </CardContent>
+            </Card>
+            
+            {/* Third card - Active Listings */}
+            <Card className="absolute bottom-[20%] left-[-80px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="feature-icon green-dot"></span>
+                  <h3 className="text-xl font-bold">Browse Listings</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-green/20" />
+                <p className="text-sm">Discover active food listings from local home chefs and place your orders for homemade meals</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
