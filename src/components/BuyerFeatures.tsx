@@ -66,7 +66,7 @@ const BuyerFeatures: React.FC = () => {
             </Card>
             
             {/* Second card - Earnings */}
-            <Card className="absolute top-[35%] right-[-80px] md:right-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+            <Card className="absolute top-[5%] left-[-20px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
               <CardContent className="p-4">
                 <div className="flex items-center mb-2">
                   <span className="feature-icon red-dot"></span>
@@ -78,7 +78,7 @@ const BuyerFeatures: React.FC = () => {
             </Card>
             
             {/* Third card - Active Listings */}
-            <Card className="absolute bottom-[20%] left-[-80px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+            <Card className="absolute top-[5%] left-[-20px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
               <CardContent className="p-4">
                 <div className="flex items-center mb-2">
                   <span className="feature-icon green-dot"></span>
