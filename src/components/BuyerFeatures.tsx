@@ -54,16 +54,12 @@ const BuyerFeatures: React.FC = () => {
             <div className="absolute bottom-[25%] left-[10%] md:left-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-green z-5"></div>
             
             {/* First card - Calendar Feature */}
-            <Card className="absolute top-[5%] left-[-80px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
-              <CardContent className="p-4">
-                <div className="flex items-center mb-2">
-                  <span className="highlight-dot bg-icancook-purple"></span>
-                  <h3 className="text-xl font-bold">Cooking Schedule</h3>
-                </div>
-                <Separator className="my-2 bg-icancook-purple/20" />
-                <p className="text-sm">Plan your meals with our intuitive calendar system that helps manage your cooking schedule</p>
-              </CardContent>
-            </Card>
+<Card className="absolute top-[5%] left-[-20px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+  <CardContent className="p-4">
+    {/* ... card content ... */}
+  </CardContent>
+</Card>
+
             
             {/* Second card - Earnings */}
             <Card className="absolute top-[35%] right-[-80px] md:right-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
