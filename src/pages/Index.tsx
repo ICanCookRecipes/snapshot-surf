@@ -4,7 +4,7 @@ import NavBar from '@/components/NavBar';
 import HeroSection from '@/components/HeroSection';
 import BuyerFeatures from '@/components/BuyerFeatures';
 import SellerFeatures from '@/components/SellerFeatures';
-import DashboardSection from '@/components/DashboardSection';
+import ReferralsSection from '@/components/ReferralsSection';
 import Footer from '@/components/Footer';
 
 const Index: React.FC = () => {
@@ -15,7 +15,7 @@ const Index: React.FC = () => {
         <HeroSection />
         <BuyerFeatures />
         <SellerFeatures />
-        <DashboardSection />
+        <ReferralsSection />
       </main>
       <Footer />
     </div>

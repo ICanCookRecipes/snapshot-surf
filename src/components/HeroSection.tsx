@@ -24,9 +24,11 @@ const HeroSection: React.FC = () => {
                 Download App
               </Button>
             </a>
+            <a href="#referrals" className="text-lg font-medium hover:text-purple-600 transition-colors">
             <Button className="bg-white text-purple-800 hover:bg-gray-100">
               Referral
             </Button>
+            </a>
           </div>
         </div>
         <div

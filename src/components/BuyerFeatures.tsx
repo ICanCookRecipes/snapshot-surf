@@ -43,7 +43,7 @@ const BuyerFeatures: React.FC = () => {
         <div className="md:w-1/2 flex justify-center">
         <div className="relative w-full max-w-md md:h-[800px] overflow-visible">
             <img 
-              src="/lovable-uploads/0c058e56-b517-4bd1-aee6-1a4ebc992589.png"
+              src="/lovable-uploads/dashboard3-portrait.png"
               alt="ICanCook App Seller Dashboard"
               className="max-w-[80%] md:max-w-full h-auto relative z-10 mx-auto rounded-xl shadow-lg"
             />
@@ -58,10 +58,10 @@ const BuyerFeatures: React.FC = () => {
             <CardContent className="p-4">
                 <div className="flex items-center mb-2">
                   <span className="highlight-dot bg-icancook-purple"></span>
-                  <h3 className="text-xl font-bold">Cooking Schedule</h3>
+                  <h3 className="text-xl font-bold">Cooks near you</h3>
                 </div>
                 <Separator className="my-2 bg-icancook-purple/20" />
-                <p className="text-sm">Plan your meals with our intuitive calendar system that helps manage your cooking schedule</p>
+                <p className="text-sm">Based on your phones location, search for local dishes near you</p>
               </CardContent>
             </Card>
             
@@ -70,11 +70,11 @@ const BuyerFeatures: React.FC = () => {
   <CardContent className="p-4">
     <div className="flex items-center mb-2">
       <span className="feature-icon red-dot"></span>
-      <h3 className="text-xl font-bold">Earnings Tracker</h3>
+      <h3 className="text-xl font-bold">Unique dishes</h3>
     </div>
     <Separator className="my-2 bg-icancook-red/20" />
     <p className="text-sm">
-      Track your monthly earnings from purchases and place your orders for homemade meals
+      Anyone can make dishes for you so you get unlimited options and homemade food
     </p>
   </CardContent>
 </Card>
@@ -84,11 +84,11 @@ const BuyerFeatures: React.FC = () => {
   <CardContent className="p-4">
     <div className="flex items-center mb-2">
       <span className="feature-icon green-dot"></span>
-      <h3 className="text-xl font-bold">Browse Listings</h3>
+      <h3 className="text-xl font-bold">Build connections</h3>
     </div>
     <Separator className="my-2 bg-icancook-green/20" />
     <p className="text-sm">
-      Discover active food listings from local home chefs and place your orders for homemade meals
+      As you feast with your locals, build new connections on the way
     </p>
   </CardContent>
 </Card>
