@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const SellerFeatures: React.FC = () => {
   return (
@@ -44,35 +46,52 @@ const SellerFeatures: React.FC = () => {
         
         <div className="md:w-1/2 flex justify-center">
           <div className="relative">
-            <img 
-              src="/lovable-uploads/cf22e33e-65fa-4afb-82e2-92553197ad97.png"
-              alt="ICanCook App Seller Interface"
-              className="max-w-[80%] md:max-w-full h-auto"
+          <img 
+              src="/lovable-uploads/0c058e56-b517-4bd1-aee6-1a4ebc992589.png"
+              alt="ICanCook App Seller Dashboard"
+              className="max-w-[80%] md:max-w-full h-auto relative z-10 mx-auto rounded-xl shadow-lg"
             />
+
+             {/* Connecting lines */}
+            <div className="absolute top-[10%] left-[10%] md:left-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-purple z-5"></div>
+            <div className="absolute top-[40%] right-[10%] md:right-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-red z-5"></div>
+            <div className="absolute bottom-[25%] left-[10%] md:left-[0%] w-[100px] md:w-[120px] h-[2px] bg-icancook-green z-5"></div>
             
-            <div className="absolute top-0 right-0 md:-right-20 bg-white rounded-xl p-6 shadow-lg max-w-xs">
-              <div className="flex items-center mb-2">
-                <span className="highlight-dot"></span>
-                <h3 className="text-xl font-bold">Alerts</h3>
-              </div>
-              <p>Get notified every time your dish sells, so you can prepare.</p>
-            </div>
+            {/* First card - Calendar Feature */}
+            <Card className="absolute top-[5%] left-[-80px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="highlight-dot bg-icancook-purple"></span>
+                  <h3 className="text-xl font-bold">Cooking Schedule</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-purple/20" />
+                <p className="text-sm">Plan your meals with our intuitive calendar system that helps manage your cooking schedule</p>
+              </CardContent>
+            </Card>
             
-            <div className="absolute top-1/3 right-0 md:-right-20 bg-white rounded-xl p-6 shadow-lg max-w-xs mt-8">
-              <div className="flex items-center mb-2">
-                <span className="feature-icon green-dot"></span>
-                <h3 className="text-xl font-bold">Portable</h3>
-              </div>
-              <p>Take your store with you, click on 'Update' button to update your store to your phone's location and get new buyers</p>
-            </div>
+            {/* Second card - Earnings */}
+            <Card className="absolute top-[35%] right-[-80px] md:right-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="feature-icon red-dot"></span>
+                  <h3 className="text-xl font-bold">Earnings Tracker</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-red/20" />
+                <p className="text-sm">Track your monthly earnings from purchases and place your orders for homemade meals</p>
+              </CardContent>
+            </Card>
             
-            <div className="absolute bottom-0 right-0 md:-right-20 bg-white rounded-xl p-6 shadow-lg max-w-xs">
-              <div className="flex items-center mb-2">
-                <span className="feature-icon red-dot"></span>
-                <h3 className="text-xl font-bold">Quick Payouts</h3>
-              </div>
-              <p>Request payouts anytime, simply click on the hyperlink on your dashboard to send a email to us.</p>
-            </div>
+            {/* Third card - Active Listings */}
+            <Card className="absolute bottom-[20%] left-[-80px] md:left-[-150px] max-w-[250px] z-20 feature-card transform hover:scale-105 transition-all">
+              <CardContent className="p-4">
+                <div className="flex items-center mb-2">
+                  <span className="feature-icon green-dot"></span>
+                  <h3 className="text-xl font-bold">Browse Listings</h3>
+                </div>
+                <Separator className="my-2 bg-icancook-green/20" />
+                <p className="text-sm">Discover active food listings from local home chefs and place your orders for homemade meals</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
