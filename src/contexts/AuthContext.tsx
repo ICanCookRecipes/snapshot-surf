@@ -66,6 +66,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Login with Google function
   const loginWithGoogle = async () => {
     try {
+      // Enable popup redirects
+      googleProvider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
       await signInWithPopup(auth, googleProvider);
       toast({
         title: "Login Successful",
@@ -73,9 +78,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
     } catch (error) {
       const errorMessage = (error as Error).message;
+      const errorCode = (error as any).code;
+      
+      let description = errorMessage;
+      
+      // Special handling for unauthorized domain error
+      if (errorCode === 'auth/unauthorized-domain') {
+        description = "This domain is not authorized for Google authentication. Please try email login instead, or use an authorized domain (localhost, icancookauth.firebaseapp.com).";
+      }
+      
       toast({
         title: "Google Login Failed",
-        description: errorMessage,
+        description: description,
         variant: "destructive",
       });
       throw error;

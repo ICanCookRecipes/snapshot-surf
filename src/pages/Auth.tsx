@@ -8,12 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
   const { login, loginWithGoogle, register, currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -34,12 +37,14 @@ const Auth: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setAuthError(null);
     
     try {
       await login(loginEmail, loginPassword);
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
+      setAuthError((error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -47,12 +52,19 @@ const Auth: React.FC = () => {
   
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
+    setAuthError(null);
     
     try {
       await loginWithGoogle();
       navigate('/dashboard');
     } catch (error) {
       console.error('Google login error:', error);
+      const errorCode = (error as any).code;
+      if (errorCode === 'auth/unauthorized-domain') {
+        setAuthError("This domain is not authorized for Google authentication. Please try email login instead, or access from an authorized domain (localhost, icancookauth.firebaseapp.com).");
+      } else {
+        setAuthError((error as Error).message);
+      }
     } finally {
       setIsGoogleLoading(false);
     }
@@ -61,12 +73,14 @@ const Auth: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setAuthError(null);
     
     try {
       await register(registerEmail, registerPassword);
       navigate('/dashboard');
     } catch (error) {
       console.error('Registration error:', error);
+      setAuthError((error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -75,12 +89,21 @@ const Auth: React.FC = () => {
   return (
     <div className="container flex items-center justify-center min-h-screen py-12">
       <div className="w-full max-w-md">
+        {authError && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{authError}</AlertDescription>
+          </Alert>
+        )}
+        
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="register">Register</TabsTrigger>
           </TabsList>
           
+          {/* Login Tab */}
           <TabsContent value="login">
             <Card>
               <CardHeader>
@@ -162,6 +185,7 @@ const Auth: React.FC = () => {
             </Card>
           </TabsContent>
           
+          {/* Register Tab */}
           <TabsContent value="register">
             <Card>
               <CardHeader>
