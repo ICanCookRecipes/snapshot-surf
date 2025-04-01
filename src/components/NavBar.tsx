@@ -13,21 +13,14 @@ const NavBar: React.FC = () => {
       <div className="hidden md:flex gap-6 items-center">
         <a href="#buyer" className="text-lg font-medium hover:text-purple-600 transition-colors">For Buyers</a>
         <a href="#seller" className="text-lg font-medium hover:text-purple-600 transition-colors">For Sellers</a>
-        <a href="#referrals" className="text-lg font-medium hover:text-purple-600 transition-colors">Referrals</a>
         <Link 
           to={currentUser ? "/dashboard" : "/auth"} 
           className="text-lg font-medium hover:text-purple-600 transition-colors"
         >
-          Dashboard
+          Referral
         </Link>
       </div>
       <div className="flex items-center gap-4">
-        <Link
-          to={currentUser ? "/dashboard" : "/auth"}
-          className="md:hidden text-lg font-medium hover:text-purple-600 transition-colors"
-        >
-          Dashboard
-        </Link>
         <a
           href="https://apps.apple.com/us/app/icancookfood/id6593659930"
           target="_blank"

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const HeroSection: React.FC = () => {
+
+  const { currentUser } = useAuth();
+
   return (
     <section className="min-h-screen bg-gradient-hero flex items-center relative">
       <div className="container mx-auto px-4 py-20 md:py-0 flex flex-col md:flex-row items-center">
@@ -24,11 +29,12 @@ const HeroSection: React.FC = () => {
                 Download App
               </Button>
             </a>
-            <a href="#referrals" className="text-lg font-medium hover:text-purple-600 transition-colors">
-            <Button className="bg-white text-purple-800 hover:bg-gray-100">
-              Referral
-            </Button>
-            </a>
+            <Link to={currentUser ? "/dashboard" : "/auth"} >
+              <Button className="bg-white text-purple-800 hover:bg-gray-100">
+                Referral
+              </Button>
+            </Link>
+
           </div>
         </div>
         <div
