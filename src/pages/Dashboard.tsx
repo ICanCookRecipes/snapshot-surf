@@ -1,12 +1,18 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import ReferralCodeCard from '@/components/dashboard/ReferralCodeCard';
+import StatsCards from '@/components/dashboard/StatsCards';
+import TransactionList from '@/components/dashboard/TransactionList';
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
+  const { toast } = useToast();
+  const [isPayoutLoading, setIsPayoutLoading] = useState(false);
   
   useEffect(() => {
     // If user is not logged in, redirect to auth page
@@ -23,16 +29,29 @@ const Dashboard: React.FC = () => {
       console.error('Logout error:', error);
     }
   };
+
+  const handleRequestPayout = () => {
+    setIsPayoutLoading(true);
+    
+    // Simulate payout request
+    setTimeout(() => {
+      setIsPayoutLoading(false);
+      toast({
+        title: "Payout Request Submitted",
+        description: "Your payout request has been submitted and will be processed within 3-5 business days.",
+      });
+    }, 1500);
+  };
   
   if (!currentUser) return null;
   
   return (
     <div className="container py-12">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">Welcome, {currentUser.displayName || currentUser.email}!</h1>
-            <p className="text-muted-foreground">Manage your ICanCook experience here</p>
+            <p className="text-muted-foreground">Manage your ICanCook referrals and earnings here</p>
           </div>
           <Button 
             onClick={handleLogout} 
@@ -43,22 +62,25 @@ const Dashboard: React.FC = () => {
           </Button>
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Dashboard cards would go here */}
-          <div className="bg-card rounded-lg shadow-sm p-6 border">
-            <h3 className="text-xl font-medium mb-2">My Orders</h3>
-            <p className="text-muted-foreground">View and manage your food orders</p>
+        {/* Referral Code Card */}
+        <ReferralCodeCard referralCode={currentUser.uid} />
+        
+        {/* Stats Cards */}
+        <StatsCards />
+        
+        {/* Transactions List */}
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Transaction History</h2>
+            <Button 
+              onClick={handleRequestPayout} 
+              className="bg-gradient-to-r from-icancook-red to-icancook-purple text-white"
+              disabled={isPayoutLoading}
+            >
+              {isPayoutLoading ? "Processing..." : "Request Payout"}
+            </Button>
           </div>
-          
-          <div className="bg-card rounded-lg shadow-sm p-6 border">
-            <h3 className="text-xl font-medium mb-2">My Listings</h3>
-            <p className="text-muted-foreground">Manage your food listings</p>
-          </div>
-          
-          <div className="bg-card rounded-lg shadow-sm p-6 border">
-            <h3 className="text-xl font-medium mb-2">Account Settings</h3>
-            <p className="text-muted-foreground">Update your profile and preferences</p>
-          </div>
+          <TransactionList />
         </div>
       </div>
     </div>
