@@ -1,39 +1,37 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<{ name?: string, email: string } | null>(null);
+  const { currentUser, logout } = useAuth();
   
   useEffect(() => {
-    // Check if user is logged in
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    const userInfo = localStorage.getItem('user');
-    
-    if (!isLoggedIn || !userInfo) {
+    // If user is not logged in, redirect to auth page
+    if (!currentUser) {
       navigate('/auth');
-      return;
     }
-    
-    setUser(JSON.parse(userInfo));
-  }, [navigate]);
+  }, [currentUser, navigate]);
   
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('user');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
   
-  if (!user) return null;
+  if (!currentUser) return null;
   
   return (
     <div className="container py-12">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Welcome, {user.name || user.email}!</h1>
+            <h1 className="text-3xl font-bold mb-2">Welcome, {currentUser.displayName || currentUser.email}!</h1>
             <p className="text-muted-foreground">Manage your ICanCook experience here</p>
           </div>
           <Button 

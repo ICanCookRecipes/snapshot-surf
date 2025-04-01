@@ -1,16 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { Loader2 } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { login, register, currentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
   // Login form state
@@ -22,44 +23,39 @@ const Auth: React.FC = () => {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   
-  const handleLogin = (e: React.FormEvent) => {
+  useEffect(() => {
+    // If user is logged in, redirect to dashboard
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
+  
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // This is a mock login - in a real app, you would connect to an authentication service
-    setTimeout(() => {
-      // Simulate successful login
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('user', JSON.stringify({ email: loginEmail }));
-      
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to ICanCook!",
-      });
-      
-      setIsLoading(false);
+    try {
+      await login(loginEmail, loginPassword);
       navigate('/dashboard');
-    }, 1000);
+    } catch (error) {
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // This is a mock registration - in a real app, you would connect to an auth service
-    setTimeout(() => {
-      // Simulate successful registration
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('user', JSON.stringify({ name: registerName, email: registerEmail }));
-      
-      toast({
-        title: "Registration Successful",
-        description: "Welcome to ICanCook!",
-      });
-      
-      setIsLoading(false);
+    try {
+      await register(registerEmail, registerPassword);
       navigate('/dashboard');
-    }, 1000);
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -103,8 +99,19 @@ const Auth: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-icancook-red to-icancook-purple" disabled={isLoading}>
-                    {isLoading ? "Logging in..." : "Login"}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-icancook-red to-icancook-purple" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Logging in...
+                      </>
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </CardFooter>
               </form>
@@ -126,7 +133,6 @@ const Auth: React.FC = () => {
                       placeholder="John Doe" 
                       value={registerName}
                       onChange={(e) => setRegisterName(e.target.value)}
-                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -153,8 +159,19 @@ const Auth: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-icancook-red to-icancook-purple" disabled={isLoading}>
-                    {isLoading ? "Creating account..." : "Create Account"}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-icancook-red to-icancook-purple" 
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating account...
+                      </>
+                    ) : (
+                      "Create Account"
+                    )}
                   </Button>
                 </CardFooter>
               </form>
