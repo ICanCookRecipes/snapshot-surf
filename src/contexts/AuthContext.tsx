@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -8,7 +7,7 @@ import {
   User,
   signInWithPopup
 } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { auth, googleProvider, appleProvider } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
@@ -16,6 +15,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -96,6 +96,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Login with Apple function using appleProvider
+  const loginWithApple = async () => {
+    try {
+      await signInWithPopup(auth, appleProvider);
+      toast({
+        title: "Login Successful",
+        description: "Welcome to ICanCook using Apple!",
+      });
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      toast({
+        title: "Apple Login Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   // Register function
   const register = async (email: string, password: string) => {
     try {
@@ -139,6 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     login,
     loginWithGoogle,
+    loginWithApple,
     register,
     logout
   };
