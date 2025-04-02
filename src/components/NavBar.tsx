@@ -9,11 +9,7 @@ const NavBar: React.FC = () => {
   
   return (
     <nav className="container mx-auto py-4 flex justify-between items-center">
-      <Link to="/" className="flex items-center gap-2 text-3xl font-bold gradient-text">
-        <img src="/lovable-uploads/icancook_app_icon.png" alt="Company Icon" className="w-16 h-16" />
-        ICanCook
-      </Link>
-
+      <Link to="/" className="text-3xl font-bold gradient-text">ICanCook</Link>
       <div className="hidden md:flex gap-6 items-center">
         <a href="#buyer" className="text-lg font-medium hover:text-purple-600 transition-colors">For Buyers</a>
         <a href="#seller" className="text-lg font-medium hover:text-purple-600 transition-colors">For Sellers</a>
