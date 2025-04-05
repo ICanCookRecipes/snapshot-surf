@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/firebase';
 import { sendEmailVerification, reload } from 'firebase/auth';
-import { Loader2, CheckCircle, Mail, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, Mail, AlertCircle, Clock } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,7 +17,17 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cooldownActive, setCooldownActive] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
   const { toast } = useToast();
+  
+  // Initialize verification on component mount
+  useEffect(() => {
+    // Send verification email automatically when component mounts
+    if (auth.currentUser && !auth.currentUser.emailVerified) {
+      sendVerificationEmail();
+    }
+  }, []);
   
   // Check verification status every 3 seconds
   useEffect(() => {
@@ -54,6 +64,23 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
     return () => clearInterval(interval);
   }, [onVerified, toast]);
   
+  // Cooldown timer
+  useEffect(() => {
+    if (!cooldownActive || cooldownTime <= 0) return;
+    
+    const interval = setInterval(() => {
+      setCooldownTime(prevTime => {
+        if (prevTime <= 1) {
+          setCooldownActive(false);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [cooldownActive, cooldownTime]);
+  
   const sendVerificationEmail = async () => {
     if (!auth.currentUser) return;
     
@@ -68,11 +95,22 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
       });
     } catch (error) {
       console.error("Error sending verification email:", error);
-      setError((error as Error).message);
+      const errorCode = (error as any).code;
+      
+      // Handle rate limiting error
+      if (errorCode === 'auth/too-many-requests') {
+        setError("Too many verification emails sent. Please wait a few minutes before trying again.");
+        setCooldownActive(true);
+        setCooldownTime(60); // 60 seconds cooldown
+      } else {
+        setError((error as Error).message);
+      }
       
       toast({
         title: "Failed to Send Email",
-        description: (error as Error).message,
+        description: errorCode === 'auth/too-many-requests' 
+          ? "Too many attempts. Please wait before trying again." 
+          : (error as Error).message,
         variant: "destructive",
       });
     } finally {
@@ -124,13 +162,18 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
               <Button
                 variant="outline"
                 onClick={sendVerificationEmail}
-                disabled={isSending}
+                disabled={isSending || cooldownActive}
                 className="w-full"
               >
                 {isSending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Sending...
+                  </>
+                ) : cooldownActive ? (
+                  <>
+                    <Clock className="mr-2 h-4 w-4" />
+                    Wait {cooldownTime}s
                   </>
                 ) : (
                   "Resend Verification Email"

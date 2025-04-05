@@ -55,10 +55,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "Welcome back to ICanCook!",
       });
     } catch (error) {
-      const errorMessage = (error as Error).message;
+      console.error('Login error:', error);
+      const errorCode = (error as any).code;
+      let description = (error as Error).message;
+      
+      // Provide more user-friendly error messages
+      if (errorCode === 'auth/invalid-credential') {
+        description = "Invalid email or password. Please try again.";
+      } else if (errorCode === 'auth/user-not-found') {
+        description = "No account found with this email. Please register first.";
+      } else if (errorCode === 'auth/wrong-password') {
+        description = "Incorrect password. Please try again.";
+      }
+      
       toast({
         title: "Login Failed",
-        description: errorMessage,
+        description: description,
         variant: "destructive",
       });
       throw error;
@@ -79,10 +91,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "Welcome to ICanCook!",
       });
     } catch (error) {
-      const errorMessage = (error as Error).message;
+      console.error('Google login error:', error);
       const errorCode = (error as any).code;
       
-      let description = errorMessage;
+      let description = (error as Error).message;
       
       // Special handling for unauthorized domain error
       if (errorCode === 'auth/unauthorized-domain') {
@@ -107,6 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "Welcome to ICanCook using Apple!",
       });
     } catch (error) {
+      console.error('Apple login error:', error);
       const errorMessage = (error as Error).message;
       toast({
         title: "Apple Login Failed",
@@ -124,18 +137,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Send email verification
       if (userCredential.user) {
-        await sendEmailVerification(userCredential.user);
+        try {
+          await sendEmailVerification(userCredential.user, {
+            url: window.location.origin + '/dashboard', // Redirect URL after verification
+            handleCodeInApp: false,
+          });
+          
+          toast({
+            title: "Registration Successful",
+            description: "Please check your email to verify your account.",
+          });
+        } catch (verificationError) {
+          console.error("Verification email error:", verificationError);
+          const errorCode = (verificationError as any).code;
+          
+          if (errorCode === 'auth/too-many-requests') {
+            toast({
+              title: "Verification Email Limited",
+              description: "Too many attempts. Please wait a few minutes before requesting another verification email.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Verification Email Issue",
+              description: "Account created, but we couldn't send a verification email. You can request one on the verification page.",
+              variant: "destructive",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      const errorCode = (error as any).code;
+      let description = (error as Error).message;
+      
+      // Provide more user-friendly error messages
+      if (errorCode === 'auth/email-already-in-use') {
+        description = "This email is already registered. Please login instead.";
+      } else if (errorCode === 'auth/weak-password') {
+        description = "Password is too weak. Please use a stronger password.";
+      } else if (errorCode === 'auth/invalid-email') {
+        description = "Invalid email address. Please check and try again.";
       }
       
       toast({
-        title: "Registration Successful",
-        description: "Please check your email to verify your account.",
-      });
-    } catch (error) {
-      const errorMessage = (error as Error).message;
-      toast({
         title: "Registration Failed",
-        description: errorMessage,
+        description: description,
         variant: "destructive",
       });
       throw error;
