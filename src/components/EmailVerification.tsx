@@ -19,13 +19,31 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
   const [error, setError] = useState<string | null>(null);
   const [cooldownActive, setCooldownActive] = useState(false);
   const [cooldownTime, setCooldownTime] = useState(0);
+  const [initialEmailSent, setInitialEmailSent] = useState(false);
   const { toast } = useToast();
   
-  // Initialize verification on component mount
+  // Initialize verification status check on component mount
   useEffect(() => {
-    // Send verification email automatically when component mounts
-    if (auth.currentUser && !auth.currentUser.emailVerified) {
-      sendVerificationEmail();
+    // Check verification status only, don't send email automatically
+    if (!auth.currentUser) return;
+    checkVerificationStatus();
+  }, []);
+  
+  // Initialize the cooldown from localStorage if it exists
+  useEffect(() => {
+    const storedCooldownEndTime = localStorage.getItem('verificationCooldownEnd');
+    if (storedCooldownEndTime) {
+      const endTime = parseInt(storedCooldownEndTime, 10);
+      const now = Date.now();
+      
+      if (endTime > now) {
+        // Cooldown is still active
+        setCooldownActive(true);
+        setCooldownTime(Math.ceil((endTime - now) / 1000));
+      } else {
+        // Cooldown has expired, clear it
+        localStorage.removeItem('verificationCooldownEnd');
+      }
     }
   }, []);
   
@@ -33,36 +51,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
   useEffect(() => {
     if (!auth.currentUser) return;
     
-    const checkVerification = async () => {
-      if (!auth.currentUser) return;
-      
-      try {
-        setIsVerifying(true);
-        // Refresh the user to check current state
-        await reload(auth.currentUser);
-        
-        if (auth.currentUser.emailVerified) {
-          toast({
-            title: "Email Verified",
-            description: "Your email has been verified successfully.",
-          });
-          onVerified();
-        }
-      } catch (error) {
-        console.error("Error checking verification status:", error);
-        setError((error as Error).message);
-      } finally {
-        setIsVerifying(false);
-      }
-    };
-    
-    const interval = setInterval(checkVerification, 3000);
-    
-    // Initial check
-    checkVerification();
-    
+    const interval = setInterval(checkVerificationStatus, 3000);
     return () => clearInterval(interval);
-  }, [onVerified, toast]);
+  }, []);
   
   // Cooldown timer
   useEffect(() => {
@@ -72,6 +63,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
       setCooldownTime(prevTime => {
         if (prevTime <= 1) {
           setCooldownActive(false);
+          localStorage.removeItem('verificationCooldownEnd');
           return 0;
         }
         return prevTime - 1;
@@ -81,6 +73,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
     return () => clearInterval(interval);
   }, [cooldownActive, cooldownTime]);
   
+  // Send verification email with improved cooldown handling
   const sendVerificationEmail = async () => {
     if (!auth.currentUser) return;
     
@@ -88,8 +81,8 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
       setIsSending(true);
       setError(null);
       
-      // Send verification without specifying a URL to avoid domain whitelisting issues
       await sendEmailVerification(auth.currentUser);
+      setInitialEmailSent(true);
       
       toast({
         title: "Verification Email Sent",
@@ -101,22 +94,54 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
       
       // Handle rate limiting error
       if (errorCode === 'auth/too-many-requests') {
-        setError("Too many verification emails sent. Please wait a few minutes before trying again.");
+        // Set a 60 second cooldown
         setCooldownActive(true);
-        setCooldownTime(60); // 60 seconds cooldown
+        setCooldownTime(60);
+        
+        // Store cooldown end time in localStorage
+        const cooldownEndTime = Date.now() + (60 * 1000);
+        localStorage.setItem('verificationCooldownEnd', cooldownEndTime.toString());
+        
+        setError("Too many verification emails sent. Please wait a minute before trying again.");
+        
+        toast({
+          title: "Too Many Requests",
+          description: "Please wait a minute before requesting another verification email.",
+          variant: "destructive",
+        });
       } else {
         setError((error as Error).message);
+        
+        toast({
+          title: "Failed to Send Email",
+          description: (error as Error).message,
+          variant: "destructive",
+        });
       }
-      
-      toast({
-        title: "Failed to Send Email",
-        description: errorCode === 'auth/too-many-requests' 
-          ? "Too many attempts. Please wait before trying again." 
-          : (error as Error).message,
-        variant: "destructive",
-      });
     } finally {
       setIsSending(false);
+    }
+  };
+  
+  const checkVerificationStatus = async () => {
+    if (!auth.currentUser) return;
+    
+    try {
+      setIsVerifying(true);
+      // Refresh the user to check current state
+      await reload(auth.currentUser);
+      
+      if (auth.currentUser.emailVerified) {
+        toast({
+          title: "Email Verified",
+          description: "Your email has been verified successfully.",
+        });
+        onVerified();
+      }
+    } catch (error) {
+      console.error("Error checking verification status:", error);
+    } finally {
+      setIsVerifying(false);
     }
   };
   
@@ -126,8 +151,14 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Verify Your Email</CardTitle>
           <CardDescription>
-            We've sent a verification email to{" "}
-            <span className="font-medium">{auth.currentUser?.email}</span>
+            {initialEmailSent ? (
+              <>We've sent a verification email to <span className="font-medium">{auth.currentUser?.email}</span></>
+            ) : (
+              <>
+                Click the button below to send a verification email to{" "}
+                <span className="font-medium">{auth.currentUser?.email}</span>
+              </>
+            )}
           </CardDescription>
         </CardHeader>
         
@@ -146,23 +177,26 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
                 <Loader2 className="h-12 w-12 animate-spin text-icancook-purple" />
                 <p className="text-sm text-muted-foreground">Checking verification status...</p>
               </div>
-            ) : (
+            ) : initialEmailSent ? (
               <div className="flex flex-col items-center gap-2">
                 <Mail className="h-12 w-12 text-icancook-purple" />
                 <p className="text-sm text-muted-foreground">
                   Please check your email and click the verification link
                 </p>
               </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <Mail className="h-12 w-12 text-icancook-purple" />
+                <p className="text-sm text-muted-foreground">
+                  You need to verify your email address to continue
+                </p>
+              </div>
             )}
           </div>
           
           <div className="space-y-2">
-            <p className="text-sm text-center text-muted-foreground">
-              Didn't receive the email? Check your spam folder or click below to resend.
-            </p>
-            <div className="flex justify-center">
+            {!initialEmailSent ? (
               <Button
-                variant="outline"
                 onClick={sendVerificationEmail}
                 disabled={isSending || cooldownActive}
                 className="w-full"
@@ -170,7 +204,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
                 {isSending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
+                    Sending Verification Email...
                   </>
                 ) : cooldownActive ? (
                   <>
@@ -178,10 +212,36 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
                     Wait {cooldownTime}s
                   </>
                 ) : (
-                  "Resend Verification Email"
+                  "Send Verification Email"
                 )}
               </Button>
-            </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-sm text-center text-muted-foreground">
+                  Didn't receive the email? Check your spam folder or click below to resend.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={sendVerificationEmail}
+                  disabled={isSending || cooldownActive}
+                  className="w-full"
+                >
+                  {isSending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : cooldownActive ? (
+                    <>
+                      <Clock className="mr-2 h-4 w-4" />
+                      Wait {cooldownTime}s
+                    </>
+                  ) : (
+                    "Resend Verification Email"
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
         

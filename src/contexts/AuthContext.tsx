@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -125,10 +126,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (email: string, password: string) => {
     try {
+      // First create the user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Only attempt to send verification email if user was created successfully
       if (userCredential.user) {
+        // Don't show toast yet - wait until we've tried to send the verification email
+        
         try {
+          // We don't need to specify a URL - let Firebase use its default settings
           await sendEmailVerification(userCredential.user);
           
           toast({
@@ -139,17 +145,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error("Verification email error:", verificationError);
           const errorCode = (verificationError as any).code;
           
+          // Only show an error if it's not too-many-requests - we'll handle that specially
           if (errorCode === 'auth/too-many-requests') {
             toast({
-              title: "Verification Email Limited",
-              description: "Too many attempts. Please wait a few minutes before requesting another verification email.",
-              variant: "destructive",
+              title: "Verification Email Will Be Sent",
+              description: "Your account has been created. You can request a verification email on the next screen.",
             });
           } else {
             toast({
-              title: "Verification Email Issue",
-              description: "Account created, but we couldn't send a verification email. You can request one on the verification page.",
-              variant: "destructive",
+              title: "Account Created",
+              description: "Your account was created, but we couldn't send a verification email. You can request one on the verification page.",
             });
           }
         }
