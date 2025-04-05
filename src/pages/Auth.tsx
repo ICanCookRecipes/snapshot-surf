@@ -156,11 +156,6 @@ const Auth: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!agreedToTerms) {
-      setAuthError("You must agree to the terms and conditions to create an account.");
-      return;
-    }
-    
     setIsLoading(true);
     setAuthError(null);
     
@@ -357,31 +352,7 @@ const Auth: React.FC = () => {
                       required
                     />
                   </div>
-                  
-                  {/* Terms and Conditions Checkbox */}
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="terms"
-                      checked={agreedToTerms}
-                      onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-                    />
-                    <label
-                      htmlFor="terms"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      I agree to the{" "}
-                      <a
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setAuthState(AuthState.TERMS_AGREEMENT);
-                        }}
-                        className="text-blue-600 hover:underline"
-                      >
-                        terms and conditions
-                      </a>
-                    </label>
-                  </div>
+              
                   
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
