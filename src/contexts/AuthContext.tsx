@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -5,7 +6,8 @@ import {
   signOut, 
   onAuthStateChanged,
   User,
-  signInWithPopup
+  signInWithPopup,
+  sendEmailVerification
 } from 'firebase/auth';
 import { auth, googleProvider, appleProvider } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
@@ -115,13 +117,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Register function
+  // Register function with email verification
   const register = async (email: string, password: string) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Send email verification
+      if (userCredential.user) {
+        await sendEmailVerification(userCredential.user);
+      }
+      
       toast({
         title: "Registration Successful",
-        description: "Welcome to ICanCook!",
+        description: "Please check your email to verify your account.",
       });
     } catch (error) {
       const errorMessage = (error as Error).message;
