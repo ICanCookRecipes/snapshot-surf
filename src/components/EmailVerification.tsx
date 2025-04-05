@@ -87,6 +87,8 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onVerified, onBac
     try {
       setIsSending(true);
       setError(null);
+      
+      // Send verification without specifying a URL to avoid domain whitelisting issues
       await sendEmailVerification(auth.currentUser);
       
       toast({

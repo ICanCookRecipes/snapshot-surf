@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -46,7 +45,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
 
-  // Login function
   const login = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -59,7 +57,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const errorCode = (error as any).code;
       let description = (error as Error).message;
       
-      // Provide more user-friendly error messages
       if (errorCode === 'auth/invalid-credential') {
         description = "Invalid email or password. Please try again.";
       } else if (errorCode === 'auth/user-not-found') {
@@ -77,10 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Login with Google function
   const loginWithGoogle = async () => {
     try {
-      // Enable popup redirects
       googleProvider.setCustomParameters({
         prompt: 'select_account'
       });
@@ -96,7 +91,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       let description = (error as Error).message;
       
-      // Special handling for unauthorized domain error
       if (errorCode === 'auth/unauthorized-domain') {
         description = "This domain is not authorized for Google authentication. Please try email login instead, or use an authorized domain (localhost, icancookauth.firebaseapp.com).";
       }
@@ -110,7 +104,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Login with Apple function using appleProvider
   const loginWithApple = async () => {
     try {
       await signInWithPopup(auth, appleProvider);
@@ -130,18 +123,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Register function with email verification
   const register = async (email: string, password: string) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Send email verification
       if (userCredential.user) {
         try {
-          await sendEmailVerification(userCredential.user, {
-            url: window.location.origin + '/dashboard', // Redirect URL after verification
-            handleCodeInApp: false,
-          });
+          await sendEmailVerification(userCredential.user);
           
           toast({
             title: "Registration Successful",
@@ -171,7 +159,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const errorCode = (error as any).code;
       let description = (error as Error).message;
       
-      // Provide more user-friendly error messages
       if (errorCode === 'auth/email-already-in-use') {
         description = "This email is already registered. Please login instead.";
       } else if (errorCode === 'auth/weak-password') {
@@ -189,7 +176,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Logout function
   const logout = async () => {
     try {
       await signOut(auth);
