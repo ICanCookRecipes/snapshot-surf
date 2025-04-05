@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,7 @@ enum AuthState {
 
 const Auth: React.FC = () => {
   const navigate = useNavigate();
-  const { login, loginWithGoogle, loginWithApple, register, currentUser, logout } = useAuth();
+  const { login, loginWithGoogle, loginWithApple, register, currentUser, logout, requiresEmailVerification, setRequiresEmailVerification } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isAppleLoading, setIsAppleLoading] = useState(false);
@@ -42,11 +41,22 @@ const Auth: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   
   useEffect(() => {
-    // If user is logged in and has completed the flow, redirect to dashboard
-    if (currentUser && authState === AuthState.COMPLETE) {
+    // Check if email verification is required
+    if (currentUser && requiresEmailVerification && !currentUser.emailVerified) {
+      setAuthState(AuthState.EMAIL_VERIFICATION);
+    } else if (currentUser && authState === AuthState.COMPLETE) {
+      // Only redirect to dashboard if user is logged in, email is verified (or verification not required),
+      // and auth flow is complete
       navigate('/dashboard');
     }
-  }, [currentUser, navigate, authState]);
+  }, [currentUser, navigate, authState, requiresEmailVerification]);
+  
+  // Add another useEffect to check email verification status on component mount
+  useEffect(() => {
+    if (currentUser && !currentUser.emailVerified && localStorage.getItem('needsEmailVerification') === 'true') {
+      setAuthState(AuthState.EMAIL_VERIFICATION);
+    }
+  }, [currentUser]);
   
   const proceedToTermsAgreement = () => {
     setAuthState(AuthState.TERMS_AGREEMENT);
@@ -69,6 +79,9 @@ const Auth: React.FC = () => {
   };
   
   const handleEmailVerified = () => {
+    // Clear the verification flag when email is verified
+    setRequiresEmailVerification(false);
+    localStorage.removeItem('needsEmailVerification');
     proceedToTermsAgreement();
   };
   

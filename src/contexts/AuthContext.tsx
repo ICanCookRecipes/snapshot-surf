@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -20,6 +19,8 @@ interface AuthContextType {
   loginWithApple: () => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  requiresEmailVerification: boolean;
+  setRequiresEmailVerification: (value: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,12 +36,19 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [requiresEmailVerification, setRequiresEmailVerification] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
+      
+      if (user && !user.emailVerified && localStorage.getItem('needsEmailVerification') === 'true') {
+        setRequiresEmailVerification(true);
+      } else {
+        setRequiresEmailVerification(false);
+      }
     });
 
     return unsubscribe;
@@ -49,10 +57,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to ICanCook!",
-      });
+      
+      if (auth.currentUser && !auth.currentUser.emailVerified) {
+        setRequiresEmailVerification(true);
+        localStorage.setItem('needsEmailVerification', 'true');
+        
+        toast({
+          title: "Email Verification Required",
+          description: "Please verify your email before accessing your account.",
+        });
+      } else {
+        setRequiresEmailVerification(false);
+        localStorage.removeItem('needsEmailVerification');
+        
+        toast({
+          title: "Login Successful",
+          description: "Welcome back to ICanCook!",
+        });
+      }
     } catch (error) {
       console.error('Login error:', error);
       const errorCode = (error as any).code;
@@ -126,15 +148,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (email: string, password: string) => {
     try {
-      // First create the user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Only attempt to send verification email if user was created successfully
       if (userCredential.user) {
-        // Don't show toast yet - wait until we've tried to send the verification email
+        setRequiresEmailVerification(true);
+        localStorage.setItem('needsEmailVerification', 'true');
         
         try {
-          // We don't need to specify a URL - let Firebase use its default settings
           await sendEmailVerification(userCredential.user);
           
           toast({
@@ -145,7 +165,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error("Verification email error:", verificationError);
           const errorCode = (verificationError as any).code;
           
-          // Only show an error if it's not too-many-requests - we'll handle that specially
           if (errorCode === 'auth/too-many-requests') {
             toast({
               title: "Verification Email Will Be Sent",
@@ -184,6 +203,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await signOut(auth);
+      setRequiresEmailVerification(false);
+      localStorage.removeItem('needsEmailVerification');
+      
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out.",
@@ -206,7 +228,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loginWithGoogle,
     loginWithApple,
     register,
-    logout
+    logout,
+    requiresEmailVerification,
+    setRequiresEmailVerification
   };
 
   return (

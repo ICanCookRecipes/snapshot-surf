@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,16 +9,24 @@ import { useToast } from '@/hooks/use-toast';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, requiresEmailVerification } = useAuth();
   const { toast } = useToast();
   const [isPayoutLoading, setIsPayoutLoading] = useState(false);
   
   useEffect(() => {
-    // If user is not logged in, redirect to auth page
+    // If user is not logged in or requires email verification, redirect to auth page
     if (!currentUser) {
       navigate('/auth');
+    } else if (requiresEmailVerification) {
+      // If email verification is required, redirect to auth page
+      navigate('/auth');
+      toast({
+        title: "Email Verification Required",
+        description: "Please verify your email before accessing the dashboard.",
+        variant: "destructive",
+      });
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, navigate, requiresEmailVerification, toast]);
   
   const handleLogout = async () => {
     try {
@@ -43,7 +50,7 @@ const Dashboard: React.FC = () => {
     }, 1500);
   };
   
-  if (!currentUser) return null;
+  if (!currentUser || requiresEmailVerification) return null;
   
   return (
     <div className="container py-12">
