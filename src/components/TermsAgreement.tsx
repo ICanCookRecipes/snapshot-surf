@@ -25,7 +25,7 @@ const TermsAgreement: React.FC<TermsAgreementProps> = ({
   
   // Set terms acceptance status in localStorage when component mounts
   useEffect(() => {
-    if (open && !localStorage.getItem('termsAccepted')) {
+    if (open) {
       localStorage.setItem('termsRequiredButNotAccepted', 'true');
     }
   }, [open]);

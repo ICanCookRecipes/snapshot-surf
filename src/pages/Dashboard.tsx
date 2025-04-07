@@ -28,9 +28,17 @@ const Dashboard: React.FC = () => {
         description: "Please verify your email before accessing the dashboard.",
         variant: "destructive",
       });
-    } else if (localStorage.getItem('termsRequiredButNotAccepted') === 'true') {
-      // If terms need to be accepted but haven't been, show terms modal
-      setShowTerms(true);
+    } else {
+      // Check if terms need to be accepted
+      const termsAccepted = localStorage.getItem('termsAccepted') === 'true';
+      const termsRequired = localStorage.getItem('termsRequiredButNotAccepted') === 'true' || !termsAccepted;
+      
+      if (termsRequired) {
+        // Show terms modal if needed
+        setShowTerms(true);
+        // Make sure the flag is set
+        localStorage.setItem('termsRequiredButNotAccepted', 'true');
+      }
     }
   }, [currentUser, navigate, requiresEmailVerification, toast]);
   
@@ -58,6 +66,9 @@ const Dashboard: React.FC = () => {
   
   const handleTermsAccepted = () => {
     setShowTerms(false);
+    // Make sure to mark terms as accepted in localStorage
+    localStorage.setItem('termsAccepted', 'true');
+    localStorage.removeItem('termsRequiredButNotAccepted');
   };
   
   const handleTermsCancelled = async () => {

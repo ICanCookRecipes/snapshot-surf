@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   createUserWithEmailAndPassword, 
@@ -48,6 +49,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setRequiresEmailVerification(true);
       } else {
         setRequiresEmailVerification(false);
+      }
+
+      // Check if this is a new user login that requires terms acceptance
+      if (user && !localStorage.getItem('termsAccepted')) {
+        // Ensure terms agreement is required
+        localStorage.setItem('termsRequiredButNotAccepted', 'true');
       }
     });
 
