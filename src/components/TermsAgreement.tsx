@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Dialog, 
   DialogContent, 
@@ -22,18 +22,34 @@ const TermsAgreement: React.FC<TermsAgreementProps> = ({
   onCancel 
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Set terms acceptance status in localStorage when component mounts
+  useEffect(() => {
+    if (open && !localStorage.getItem('termsAccepted')) {
+      localStorage.setItem('termsRequiredButNotAccepted', 'true');
+    }
+  }, [open]);
 
   const handleAccept = () => {
     setIsLoading(true);
     // Simulate loading for better UX
     setTimeout(() => {
       setIsLoading(false);
+      // Mark terms as accepted in localStorage
+      localStorage.setItem('termsAccepted', 'true');
+      localStorage.removeItem('termsRequiredButNotAccepted');
       onAccept();
     }, 500);
   };
 
+  const handleCancel = () => {
+    // Ensure we maintain the status that terms need to be accepted
+    localStorage.setItem('termsRequiredButNotAccepted', 'true');
+    onCancel();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onCancel()}>
+    <Dialog open={open} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-4xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Terms and Agreement</DialogTitle>
@@ -110,7 +126,7 @@ const TermsAgreement: React.FC<TermsAgreementProps> = ({
         </div>
         
         <DialogFooter className="flex gap-2 mt-4">
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" onClick={handleCancel}>
             Decline
           </Button>
           <Button 

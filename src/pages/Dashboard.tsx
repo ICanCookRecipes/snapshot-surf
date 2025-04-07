@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,14 @@ import ReferralCodeCard from '@/components/dashboard/ReferralCodeCard';
 import StatsCards from '@/components/dashboard/StatsCards';
 import TransactionList from '@/components/dashboard/TransactionList';
 import { useToast } from '@/hooks/use-toast';
+import TermsAgreement from '@/components/TermsAgreement';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, logout, requiresEmailVerification } = useAuth();
   const { toast } = useToast();
   const [isPayoutLoading, setIsPayoutLoading] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   
   useEffect(() => {
     // If user is not logged in or requires email verification, redirect to auth page
@@ -25,6 +28,9 @@ const Dashboard: React.FC = () => {
         description: "Please verify your email before accessing the dashboard.",
         variant: "destructive",
       });
+    } else if (localStorage.getItem('termsRequiredButNotAccepted') === 'true') {
+      // If terms need to be accepted but haven't been, show terms modal
+      setShowTerms(true);
     }
   }, [currentUser, navigate, requiresEmailVerification, toast]);
   
@@ -50,10 +56,38 @@ const Dashboard: React.FC = () => {
     }, 1500);
   };
   
+  const handleTermsAccepted = () => {
+    setShowTerms(false);
+  };
+  
+  const handleTermsCancelled = async () => {
+    // If user declines terms, log them out and return to login screen
+    try {
+      await logout();
+      navigate('/auth');
+      toast({
+        title: "Terms Agreement Required",
+        description: "You must accept the terms and conditions to use ICanCook.",
+        variant: "destructive",
+      });
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
+  
   if (!currentUser || requiresEmailVerification) return null;
   
   return (
     <div className="container py-12">
+      {/* Show Terms Agreement if needed */}
+      {showTerms && (
+        <TermsAgreement
+          open={showTerms}
+          onAccept={handleTermsAccepted}
+          onCancel={handleTermsCancelled}
+        />
+      )}
+      
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
