@@ -17,7 +17,7 @@ const HeroSection: React.FC = () => {
             <span className="text-[#4a89dc]">App</span>
           </h1>
           <p className="text-white text-xl mb-8">
-            Make money selling dishes to people near you! Refer and earn 7% on each transaction!
+            Earn $$$ by selling dishes to people near you, refer w/code and earn 7% on each transaction
           </p>
           <div className="flex gap-4">
             <a
