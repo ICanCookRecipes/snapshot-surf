@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
           <div className="flex items-center gap-4">
             <p>© 2025 ICanCook. All rights reserved.</p>
             <a 
-              href="/privacy-policy.pdf" 
+              href="/privacy_policy.pdf" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-white hover:text-purple-400 transition-colors"
