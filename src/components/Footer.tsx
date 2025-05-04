@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
                       
                       <section>
                         <h3 className="font-semibold text-lg mb-2">2. User Feedback Mechanism</h3>
-                        <p>ICanCook provides an in-app mechanism for users to report concerns, submit feedback, or report violations of our policies, including any content or behavior that may harm minors. Users can flag concerning content directly through the app's reporting feature or contact our safety team at safety@icancook.com.</p>
+                        <p>ICanCook provides an in-app mechanism for users to report concerns, submit feedback, or report violations of our policies, including any content or behavior that may harm minors. Users can flag concerning content directly through the app's reporting feature or contact our safety team at icancookfeedback@gmail.com.</p>
                       </section>
                       
                       <section>
@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
                       
                       <section>
                         <h3 className="font-semibold text-lg mb-2">5. Child Safety Point of Contact</h3>
-                        <p>ICanCook has designated a child safety point of contact who is responsible for receiving notifications about potential CSAE content on our platform. This representative is positioned to speak to our enforcement procedures and take immediate action when required. For child safety concerns, please contact: childsafety@icancook.com</p>
+                        <p>ICanCook has designated a child safety point of contact who is responsible for receiving notifications about potential CSAE content on our platform. This representative is positioned to speak to our enforcement procedures and take immediate action when required. For child safety concerns, please contact: icancookfeedback@gmail.com</p>
                       </section>
                       
                       <section>
