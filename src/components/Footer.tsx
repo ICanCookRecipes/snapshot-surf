@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const Footer: React.FC = () => {
@@ -21,14 +22,12 @@ const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
             <p>© 2025 ICanCook. All rights reserved.</p>
             <div className="flex flex-wrap gap-4">
-              <a 
-                href="privacy_policy.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <Link 
+                to="/privacy-policy" 
                 className="text-white hover:text-purple-400 transition-colors"
               >
                 Privacy Policy
-              </a>
+              </Link>
               
               <Dialog>
                 <DialogTrigger className="text-white hover:text-purple-400 transition-colors cursor-pointer">
